@@ -1,0 +1,115 @@
+import web
+import sys, os
+import warnings
+import json
+import subprocess
+from os.path import isfile
+
+# Celery: Tasks/job queue,
+# Send/Receive message solution (broker) -> Rabbitmq (See docker-compose.yaml)
+from celery_tasks import convert_video_crop,convert_video_frames,convert_video_transcode,convert_video_rotate,convert_video_audio
+
+warnings.simplefilter('ignore')
+
+urls = (
+    '/(.*)', 'Service'
+)
+app = web.application(urls, globals())
+
+class Service:
+    def GET(self, name):
+        web.header('Content-Type', 'application/json')
+        web.header('Access-Control-Allow-Origin',      '*')
+        web.header('Access-Control-Allow-Credentials', 'true')
+        return json.dumps({'message': 'OK!'})
+    def POST(self, name):
+        web.header('Content-Type', 'application/json')
+        web.header('Access-Control-Allow-Origin',      '*')
+        web.header('Access-Control-Allow-Credentials', 'true')
+        data = web.data()
+        data = json.loads(data)
+
+        dir_v_path_in = data["input_folder"]
+        dir_v_path_out = data["output_folder"]
+        videotypes = ['.mp4', '.avi', '.wmv', '.3gp', '.flv', '.mkv', '.mpg', '.mpeg', '.ogv',
+                        '.ogg', '.mov', '.qt', '.ts', '.TOD', '.MOD', '.dv4', '.h264', '.vid', '.ssf', '.sec']
+        namelist = [fn for fn in os.listdir(dir_v_path_in)
+                if any(fn.endswith(ext) for ext in videotypes)]
+
+        if not os.path.exists(dir_v_path_out):
+                os.makedirs(dir_v_path_out)
+
+        response = {'input_folder': dir_v_path_in, 'output_folder': dir_v_path_out}
+        processed = []
+        for v_path in namelist:
+            base_name = os.path.splitext(v_path)[0]
+            #if isfile(dir_v_path_out + '/' + v_path_out):
+                    #v_path_out = base_name + '_transcoded' #+  #'_transcoded.mp4'
+            #a_path_out = base_name + '.mp3'
+
+            # Video Convertion
+            v_path_out = base_name + '_transcoded' + data["v_out_format"]
+            # Create Frames, unique output name for each frame
+            frame_path_out = base_name + '%03d' + '.bmp' # for the frames
+            # Crop Video
+            crop_path_out = base_name + '_CROPPED_' #+ data["v_out_format"]
+            # Rotate Video
+            rotate_path_out = base_name + '_ROTATED_' + data["rotate_video"] + data["v_out_format"]
+            # Audio Convertion
+            a_path_out_wav = base_name + '.wav'
+
+
+            v_crop = ""
+            if "crop_video" in data:
+                v_crop = data["crop_video"]
+
+            v_extract_frames = False
+            if "extract_frames" in data:
+                v_extract_frames = data["extract_frames"]
+
+            v_transcode = False
+            if "transcode_video" in data:
+                    v_transcode = data["transcode_video"]
+
+            v_rotate = ""
+            if "rotate_video" in data:
+                v_rotate = data["rotate_video"]
+
+            v_extract_audio = False
+            if "extract_audio" in data:
+                    v_extract_audio = data["extract_audio"]
+
+            a_video = {'input_video': v_path}
+
+            # Delay method is needed if we want to process the task asynchronously.
+            if v_crop:
+                make_dir = subprocess.call(['mkdir', dir_v_path_out + '/' + crop_path_out + v_crop])
+                convert_video_crop.delay(dir_v_path_in, v_path, v_crop, dir_v_path_out, crop_path_out, data)
+                a_video["output_crop"] = crop_path_out + v_crop + data["v_out_format"]
+            if v_extract_frames:
+                make_dir = subprocess.call(['mkdir', dir_v_path_out + '/' + base_name + "_Frames" ])
+                convert_video_frames.delay(dir_v_path_in, v_path, dir_v_path_out, frame_path_out, base_name)
+                a_video["output_frames"] = frame_path_out
+            if v_transcode:
+                make_dir = subprocess.call(['mkdir', dir_v_path_out + '/' + base_name + "_transcoded"])
+                convert_video_transcode.delay(dir_v_path_in, v_path, dir_v_path_out, v_path_out, base_name)
+                a_video["output_video"] = v_path_out
+            if v_rotate:
+                make_dir = subprocess.call(['mkdir', dir_v_path_out + '/' + base_name + '_ROTATED_' + data["rotate_video"]])
+                convert_video_rotate.delay(dir_v_path_in, v_path, v_rotate, dir_v_path_out, rotate_path_out, base_name, data)
+                a_video["output_rotate"] = rotate_path_out
+            if v_extract_audio:
+                convert_video_audio.delay(dir_v_path_in, v_path, dir_v_path_out, a_path_out_wav)
+                a_video["output_audio"] = a_path_out_wav
+
+            processed.append(a_video)
+
+        response['processed'] = processed
+
+        jsonstr = json.dumps(response)
+
+        return jsonstr
+
+if __name__ == "__main__":
+    app.run()
+

@@ -1,0 +1,33 @@
+version: '2'
+services:
+  web:
+    build: .
+    restart: always
+    ports:
+      - "9876:9876"
+    networks:
+      - back-tier
+    volumes:
+      - "/home/lazaros/video_data:/shared"
+
+  worker:
+    build: .
+    restart: always
+    command: celery worker -l info -A celery_tasks
+    networks:
+      - back-tier
+    volumes:
+      - "/home/lazaros/video_data:/shared"
+
+  broker:
+    image: rabbitmq:3.6.6
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
+    networks:
+      - back-tier
+
+networks:
+  back-tier:
+    external:
+      name: "back-tier"
