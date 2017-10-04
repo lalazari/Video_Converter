@@ -13,12 +13,13 @@
 
 ## Curl Parameters
 
-Input/output folders:"/shared" as input_folder and output_folder. Its a local folder into the container. The service uses default input folder ~/video_data.
-						 The user may change this folder at the docker-compose.yaml file (volumes)
+- **Input/output folders:**"/shared" as input_folder and output_folder. 
+This a local folder into the container. The service uses default input folder ~/video_data.
+The user may change this folder at the docker-compose.yaml file (volumes)
 
-	**v_out_format**: The output format of the video. In order to convert a video, the user should also enable(true) the transcode_video parameter.
+- **v_out_format:** The output format of the video. In order to convert a video, the user should also enable(true) the transcode_video parameter.
 
-	**crop_video**: Crops down the input video. Where the options are as follows:
+- **crop_video:** Crops down the input video. Where the options are as follows:
 
 				Parameters-> out_w:out_h:x:y
 					out_w is the width of the output rectangle
@@ -29,7 +30,7 @@ Input/output folders:"/shared" as input_folder and output_folder. Its a local fo
 				To crop a 80×60 section, starting from position (200, 100).
 				Empty string("crop_video":"") means no crop
 
-	**rotate_video**: Rotates the input video. Where the options are as follows:
+- **rotate_video:** Rotates the input video. Where the options are as follows:
 
 				Parameters->
 					0 = 90CounterCLockwise and Vertical Flip (default)
@@ -37,6 +38,6 @@ Input/output folders:"/shared" as input_folder and output_folder. Its a local fo
 					2 = 90CounterClockwise
 					3 = 90Clockwise and Vertical Flip
 
-	**extract_audio**: Converts a video to .waf file format
+- **extract_audio:** Converts a video to .waf file format
 
-	**extract_frames**: Extracts all the frames from the input video. Extracted frames are in .bmp format with a unique id.
+- **extract_frames:** Extracts all the frames from the input video. Extracted frames are in .bmp format with a unique id.
