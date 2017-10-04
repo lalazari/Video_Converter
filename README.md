@@ -38,6 +38,6 @@ The user may change this folder at the docker-compose.yaml file (volumes)
 					2 = 90CounterClockwise
 					3 = 90Clockwise and Vertical Flip
 
-- **extract_audio:** Converts a video to .waf file format
+- **extract_audio:** Converts a video to .wav file format
 
 - **extract_frames:** Extracts all the frames from the input video. Extracted frames are in .bmp format with a unique id.
