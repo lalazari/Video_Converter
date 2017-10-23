@@ -7,7 +7,7 @@ from os.path import isfile
 
 # Celery: Tasks/job queue,
 # Send/Receive message solution (broker) -> Rabbitmq (See docker-compose.yaml)
-from celery_tasks import convert_video_crop,convert_video_frames,convert_video_transcode,convert_video_rotate,convert_video_audio
+from celery_tasks import convert_video_crop,convert_video_frames,convert_video_transcode,convert_video_rotate,convert_video_audio,convert_video_clip
 
 warnings.simplefilter('ignore')
 
@@ -57,6 +57,8 @@ class Service:
             rotate_path_out = base_name + '_ROTATED_' + data["rotate_video"] + data["v_out_format"]
             # Audio Convertion
             a_path_out_wav = base_name + '.wav'
+            # Video Clip / Cut part of Video
+            clip_path_out = base_name + "_Cut_From_To" + data["clip_video"]# + data["v_out_formtat"]
 
 
             v_crop = ""
@@ -77,7 +79,11 @@ class Service:
 
             v_extract_audio = False
             if "extract_audio" in data:
-                    v_extract_audio = data["extract_audio"]
+                v_extract_audio = data["extract_audio"]
+
+            v_clip_video = ""
+            if "clip_video" in data:
+                v_clip_video = data["clip_video"]
 
             a_video = {'input_video': v_path}
 
@@ -101,6 +107,10 @@ class Service:
             if v_extract_audio:
                 convert_video_audio.delay(dir_v_path_in, v_path, dir_v_path_out, a_path_out_wav)
                 a_video["output_audio"] = a_path_out_wav
+            if v_clip_video:
+                make_dir = subprocess.call(['mkdir', dir_v_path_out + '/' + clip_path_out])
+                convert_video_clip.delay(dir_v_path_in, v_path, dir_v_path_out, clip_path_out, base_name, data)
+                a_video["output_clip"] = clip_path_out + data["v_out_format"]
 
             processed.append(a_video)
 

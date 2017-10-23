@@ -11,6 +11,6 @@ WORKDIR /video_converter
 COPY requirements.txt /video_converter/requirements.txt
 RUN pip install --no-cache-dir -r /video_converter/requirements.txt
 
-CMD ["python", "run_service.py", "9877"]
+CMD ["python", "run_service.py", "9876"]
 
 

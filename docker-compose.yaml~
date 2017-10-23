@@ -4,7 +4,7 @@ services:
     build: .
     restart: always
     ports:
-      - "9877:9877"
+      - "9876:9876"
     networks:
       - back-tier
     volumes:
