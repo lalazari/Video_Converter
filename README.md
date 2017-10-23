@@ -39,6 +39,7 @@ The user may change this folder at the docker-compose.yaml file (volumes)
 					3 = 90Clockwise and Vertical Flip
 
 - **clip_video:** Cuts a part of the video (Video Clip)
+
 				Parameters->
 					Start: 00:00:00 - hours:minutes:seconds
 					To / End : 00:00:00 - hours:minutes:seconds
