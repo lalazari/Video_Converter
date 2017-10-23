@@ -51,7 +51,7 @@ The user may change this folder at the docker-compose.yaml file (volumes)
 
 - **extract_frames:** Extracts all the frames from the input video. Extracted frames are in .bmp format with a unique id.
 
-##Example with curl
+## Example with curl
 Cut a part from 10th second to 30th from a .avi video:
 
 `sudo curl -XPOST -H "Content-Type: application/json" -d '{"input_folder":"/shared","output_folder":"/shared","v_out_format":".avi","crop_video":"","rotate_video":"","clip_video":"00:00:10to00:00:30","transcode_video":false,"extract_audio":false,"extract_frames":false}' localhost:9877/`
