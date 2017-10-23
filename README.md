@@ -38,6 +38,18 @@ The user may change this folder at the docker-compose.yaml file (volumes)
 					2 = 90CounterClockwise
 					3 = 90Clockwise and Vertical Flip
 
+- **clip_video:** Cuts a part of the video (Video Clip)
+				Parameters->
+					Start: 00:00:00 - hours:minutes:seconds
+					To / End : 00:00:00 - hours:minutes:seconds
+
+				Example: 00:00:10to00:00:30
+				Will cut a 20 seconds part from the input video (from 10th to 30th second).
+
 - **extract_audio:** Converts a video to .wav file format
 
 - **extract_frames:** Extracts all the frames from the input video. Extracted frames are in .bmp format with a unique id.
+
+##Example with curl
+Cut a part from 10th second to 30th from a .avi video:
+`sudo curl -XPOST -H "Content-Type: application/json" -d '{"input_folder":"/shared","output_folder":"/shared","v_out_format":".avi","crop_video":"","rotate_video":"","clip_video":"00:00:10to00:00:30","transcode_video":false,"extract_audio":false,"extract_frames":false}' localhost:9877/`
