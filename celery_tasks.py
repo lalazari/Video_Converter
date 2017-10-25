@@ -16,10 +16,27 @@ celery = Celery("tasks", broker=broker)
 def convert_video_crop(dir_v_path_in, v_path, v_crop, dir_v_path_out, crop_path_out, data):
 	subprocess.call(['ffmpeg', '-i', dir_v_path_in + '/' + v_path, '-filter:v', 'crop=' + v_crop, 
 			'-c:a', 'copy', dir_v_path_out + '/' + crop_path_out + v_crop + '/' + crop_path_out + v_crop + data["v_out_format"]])
-
+logger = get_task_logger(__name__)
 @celery.task
-def convert_video_frames(dir_v_path_in, v_path, dir_v_path_out, frame_path_out, base_name):
-	subprocess.call(['ffmpeg', '-i', dir_v_path_in + '/' + v_path, '-r', '1'+'/'+'1', dir_v_path_out + '/' + base_name + "_Frames" + '/' + frame_path_out])
+def convert_video_frames(dir_v_path_in, v_path, dir_v_path_out, frame_path_out, base_name, data):
+
+	fps = check_output(['ffprobe', '-v', '0', '-of', 'csv=p=0', '-select_streams', '0', '-show_entries', 'stream=r_frame_rate', dir_v_path_in + '/' + v_path])
+	fps = fps.strip()
+	fps = fps.split('/')[0]
+	"""If input is 0 then extract all frames. This results to fps*secs(video_duration) number of frames"""
+	if data["extract_frames"] == '0':
+		subprocess.call(['ffmpeg', '-i', dir_v_path_in + '/' + v_path, '-r', fps, dir_v_path_out + '/' + base_name + "_Frames" + '/' + frame_path_out])
+	"""If user needs frames every X milliseconds we should take care to avoid to extract more frames per second than the fps. Thus, if user demands frames 
+	every X milliseconds and this results to a value asked_frames_per_second<=fps then we can serve the user, else we can serve max fps*secs(video_duration)frames"""
+	else:
+		i_fps = float(data["extract_frames"])
+		i_fps = 1000/float(i_fps)
+		r = float(i_fps)
+
+		if float(i_fps) <= float(fps):
+			subprocess.call(['ffmpeg', '-i', dir_v_path_in + '/' + v_path, '-r', str(r), dir_v_path_out + '/' + base_name + "_Frames" + '/' + frame_path_out])
+		else:	
+		  	subprocess.call(['ffmpeg', '-i', dir_v_path_in + '/' + v_path, '-r', fps, dir_v_path_out + '/' + base_name + "_Frames" + '/' + frame_path_out])
 
 @celery.task
 def convert_video_transcode(dir_v_path_in, v_path, dir_v_path_out, v_path_out, base_name):
@@ -48,7 +65,7 @@ def convert_video_rotate(dir_v_path_in, v_path, v_rotate, dir_v_path_out, rotate
 def convert_video_audio(dir_v_path_in, v_path, dir_v_path_out, a_path_out_wav):
 	subprocess.call(['ffmpeg', '-y', '-i', dir_v_path_in + '/' + v_path, dir_v_path_out + '/' + a_path_out_wav])
 
-logger = get_task_logger(__name__)
+#logger = get_task_logger(__name__)
 @celery.task
 def convert_video_clip(dir_v_path_in, v_path, dir_v_path_out, clip_path_out, base_name, data):
 

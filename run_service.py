@@ -65,7 +65,7 @@ class Service:
             if "crop_video" in data:
                 v_crop = data["crop_video"]
 
-            v_extract_frames = False
+            v_extract_frames = ""
             if "extract_frames" in data:
                 v_extract_frames = data["extract_frames"]
 
@@ -94,7 +94,7 @@ class Service:
                 a_video["output_crop"] = crop_path_out + v_crop + data["v_out_format"]
             if v_extract_frames:
                 make_dir = subprocess.call(['mkdir', dir_v_path_out + '/' + base_name + "_Frames" ])
-                convert_video_frames.delay(dir_v_path_in, v_path, dir_v_path_out, frame_path_out, base_name)
+                convert_video_frames.delay(dir_v_path_in, v_path, dir_v_path_out, frame_path_out, base_name, data)
                 a_video["output_frames"] = frame_path_out
             if v_transcode:
                 make_dir = subprocess.call(['mkdir', dir_v_path_out + '/' + base_name + "_transcoded"])
