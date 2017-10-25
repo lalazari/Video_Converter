@@ -52,8 +52,8 @@ The user may change this folder at the docker-compose.yaml file (volumes)
 - **extract_frames:** Extracts all the frames from the input video. Extracted frames are in .bmp format with a unique id.
 				
 				Paraameters->
-				0: Extract all frames. This results to a number = fps*Video_Duration
-				Value (Milliseconds): Frames every "Value" Milliseconds with respect to fps 
+					0: Extract all frames. This results to a number = fps*Video_Duration
+					Value (Milliseconds): Frames every "Value" Milliseconds with respect to fps 
 
 ## Example with curl
 Cut a part from 10th second to 30th from a .avi video:
