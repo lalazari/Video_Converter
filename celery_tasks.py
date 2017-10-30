@@ -26,8 +26,7 @@ def convert_video_frames(dir_v_path_in, v_path, dir_v_path_out, frame_path_out, 
 	"""If input is 0 then extract all frames. This results to fps*secs(video_duration) number of frames"""
 	if data["extract_frames"] == '0':
 		subprocess.call(['ffmpeg', '-i', dir_v_path_in + '/' + v_path, '-r', fps, dir_v_path_out + '/' + base_name + "_Frames" + '/' + frame_path_out])
-	"""If user needs frames every X milliseconds we should take care to avoid to extract more frames per second than the fps. Thus, if user demands frames 
-	every X milliseconds and this results to a value asked_frames_per_second<=fps then we can serve the user, else we can serve max fps*secs(video_duration)frames"""
+	
 	else:
 		i_fps = float(data["extract_frames"])
 		i_fps = 1000/float(i_fps)

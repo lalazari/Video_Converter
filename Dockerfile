@@ -1,7 +1,7 @@
 FROM alpine
 MAINTAINER Michalis Lazaridis <Michalis.Lazaridis@iti.gr>, Lazaros Lazaridis <lazlazari@iti.gr>
 RUN apk upgrade -U \
- && apk add bash python py-pip ca-certificates ffmpeg \
+ && apk add bash python py-pip ca-certificates ffmpeg py-numpy \
  && apk add netcat-openbsd \
  && rm -rf /var/cache/*
 RUN mkdir -p /video_converter
