@@ -72,9 +72,7 @@ class Service:
                 rotate_path_out = base_name + '_ROTATED_' + data["rotate_video"] + data["v_out_format"]
             if "clip_video" in data:
                 # Video Clip / Cut part of Video
-		data_clip_video = data["clip_video"].replace(":","-")
-		clip_path_out = base_name + "_Cut_From_To" + data_clip_video
-                #clip_path_out = base_name + "_Cut_From_To" + data["clip_video"]# + data["v_out_formtat"]
+                clip_path_out = base_name + "_Cut_From_To" + data["clip_video"]# + data["v_out_formtat"]
             # Video Convertion
             v_path_out = base_name + '_transcoded' + data["v_out_format"]
             # Create Frames, unique output name for each frame
