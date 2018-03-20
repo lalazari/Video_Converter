@@ -88,7 +88,7 @@ class Service:
         logger.info("In Path: " + str(dir_v_path_in))
         logger.info("Out Path: " + str(dir_v_path_out))
 
-        """This is the output path of every type of conversion. Each operation keeps its directory tree inside the output path. 
+        """This is the output path for every type of conversion. Each operation keeps its directory tree inside the output path. 
         User can change this path by changing the output_folder parameter"""
         if not os.path.exists(dir_v_path_out):
                 os.makedirs(
@@ -102,7 +102,7 @@ class Service:
         else:
             type_of_file = "default"
 
-        """Check if user wants a specidic file format"""
+        """Check if user wants a specific file format"""
         if "file_format" in data:
             f_format = data["file_format"]
         else:
@@ -423,11 +423,3 @@ if __name__ == "__main__":
     responses_images = {}
     responses_audio = {}
     responses_video ={}
-
-#sudo curl -XPOST -H "Content-Type: application/json" -d '{"input_folder":"/shared","output_folder":"/shared/outputs","v_out_format":".avi","crop_video":"","rotate_video":"","clip_video":"00:00:10to00:00:30","image_out_format":".makis","transcode_video":false,"extract_audio":false,"extract_frames":false}' localhost:9877/
-
-
-#sudo curl -XPOST -H "Content-Type: application/json" -d '{"input_folder":"/shared","output_folder":"/shared/outputs","file_type":"","file_format":"","image_out_format":"","crop_image":"","resize_image":"","audio_out_format":"","clip_audio":"","v_out_format":".avi","crop_video":"","rotate_video":"","clip_video":"00:00:10to00:00:30","extract_frames":"","transcode_video":false,"extract_audio":false,"extract_frames":false}' localhost:9877/
-
-# sudo curl -XPOST -H "Content-Type: application/json" -d '{"input_folder":"/shared","output_folder":"/shared/outputs","file_type":"images","file_format":"","image_out_format":".tiff","crop_image":"","resize_image":"","audio_out_format":"","clip_audio":"","v_out_format":".avi","crop_video":"","rotate_video":"","clip_video":"00:00:10to00:00:30","extract_frames":"","transcode_video":false,"extract_audio":false,"extract_frames":false}' localhost:9877/
-# all -> sudo curl -XPOST -H "Content-Type: application/json" -d '{"input_folder":"/shared","output_folder":"/shared/outputs","file_type":"","file_format":"","image_out_format":".tiff","crop_image":"10:10:100:100","resize_image":"25x25","audio_out_format":".aac","clip_audio":"10to20","v_out_format":".avi","crop_video":"80:60:200:100","rotate_video":"0","clip_video":"00:00:10to00:00:30","extract_frames":"0","transcode_video":false,"extract_audio":false,"extract_frames":false}' localhost:9877/
