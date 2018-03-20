@@ -1,3 +1,6 @@
 celery==4.1.0
 pymongo
 web.py==0.38
+coloredlogs
+Pillow
+flower
