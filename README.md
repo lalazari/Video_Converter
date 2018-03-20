@@ -26,7 +26,7 @@ User can change this path by changing the output_folder parameter
 - **file_format:** Checks if user wants to load only a specific file format (Please check Supported Formats)
 
 ### Image Processing
-- **image_out_format:** Image Transcode. Defines the autput format of the image.
+- **image_out_format:** Image Transcode. Defines the output format of the image.
 - **v_out_format:** The output format of the video. In order to convert a video, the user should also enable(true) the transcode_video parameter.
 - **crop_image:** Crops down an image. Options are:
                 
@@ -36,7 +36,7 @@ User can change this path by changing the output_folder parameter
 
 - **resize_image:** Returns a resized copy of this image in pixels. width **x** height.
 
-- **audio_out_format:** Audio Transcode. Defines the autput format of the audio files.
+- **audio_out_format:** Audio Transcode. Defines the output format of the audio files.
 - **clip_audio:** Cuts a part of the audio file. 
 
                 Parameters->
