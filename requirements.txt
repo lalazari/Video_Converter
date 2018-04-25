@@ -1,0 +1,8 @@
+celery
+pymongo
+web.py==0.38
+coloredlogs
+Pillow
+flower
+delegator.py
+stomp.py

@@ -1,0 +1,47 @@
+version: '2'
+services:
+  web:
+    build: .
+    restart: always
+    ports:
+      - "9877:9877"
+    networks:
+      - back-tier
+    volumes:
+      - "./shared:/shared"
+
+  worker:
+    build: .
+    restart: always
+    command: celery worker -l info -A celery_tasks
+    networks:
+      - back-tier
+    volumes:
+      - "./shared:/shared"
+
+  broker:
+    image: rabbitmq:3.6.6
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
+    networks:
+      - back-tier
+
+  amq:
+    build: "./activemq"
+    networks:
+      - back-tier
+    ports:
+      - "61616:61616"
+      - "5672:5672"
+      - "61613:61613"
+      - "1883:1883"
+      - "61614:61614"
+      - "8161:8161"
+
+
+
+networks:
+  back-tier:
+    external:
+      name: "back-tier"
