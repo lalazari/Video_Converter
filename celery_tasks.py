@@ -33,14 +33,15 @@ def convert_video_crop(v_path, v_crop, dir_v_path_out, crop_path_out, data):
                                                       dir_v_path_out,
                                                       crop_path_out,
                                                       data)
-
+        final_path = os.path.basename(final_path)
         return {"status": "COMPLETED",
                 "final_path": final_path}
     except VideoException as exc:
-        return {"status": "FAILED {}".format(exc.msg)}
+        #return {"status": "FAILED {}".format(exc.msg)}
+        return {"status": "FAILED {0} to crop video with parameters {1}".format(os.path.basename(v_path), v_crop)}
     except Exception as exc:
-        return {"status": "FAILED {}".format(exc)}
-
+        #return {"status": "FAILED {}".format(exc)}
+        return {"status": "FAILED {0} to crop video with parameters {1}".format(os.path.basename(v_path), v_crop)}
 
 # Convert video to frames
 @celery.task
@@ -52,12 +53,13 @@ def convert_video_frames(v_path, dir_v_path_out, frame_path_out, base_name,
                                                         frame_path_out,
                                                         base_name,
                                                         float(data["extract_frames"]))
+        final_path = os.path.basename(final_path)
         return {"status": "COMPLETED",
-                "final_path": final_path}
+                "final_path": final_path.split("_")[0] + '_Frame_Extraction'}
     except VideoException as exc:
-        return {"status": "FAILED1 {}".format(exc.msg)}
+        return {"status": "FAILED {0} to extract frames".format(os.path.basename(v_path))}
     except Exception as exc:
-        return {"status": "FAILED2 {}".format(exc.message)}
+        return {"status": "FAILED {0} to extract frames".format(os.path.basename(v_path))}
 
 
 # Transcode Video
@@ -70,12 +72,13 @@ def convert_video_transcode(v_path, dir_v_path_out, transcode_path, base_name, v
                                                            transcode_path,
                                                            base_name,
                                                            v_out_format)
+        final_path = os.path.basename(final_path)
         return {"status": "COMPLETED",
                 "final_path": final_path}
     except VideoException as exc:
-        return {"status": "FAILED {}".format(exc)}
+        return {"status": "FAILED {0} to transcode to {1}".format(os.path.basename(v_path),  data['v_out_format'])}
     except Exception as exc:
-        return {"status": "FAILED {}".format(exc)}
+        return {"status": "FAILED {0} to transcode to {1}".format(os.path.basename(v_path),  data['v_out_format'])}
 
 
 # Rotate Video
@@ -87,12 +90,14 @@ def convert_video_rotate(v_path, v_rotate, dir_v_path_out, base_name, data):
                                                         dir_v_path_out,
                                                         base_name,
                                                         data)
+        final_path = os.path.basename(final_path)
         return {"status": "COMPLETED",
                 "final_path": final_path}
     except VideoException as exc:
-        return {"status": "FAILED {}".format(exc.msg)}
+        #return {"status": "FAILED {}".format(exc.msg)}
+        return {"status": "FAILED {0} to rotate video with parameter {1}".format(os.path.basename(v_path), v_rotate)}
     except Exception as exc:
-        return {"status": "FAILED {}".format(exc.message)}
+        return {"status": "FAILED {0} to rotate video with parameter {1}".format(os.path.basename(v_path), v_rotate)}
 
 
 # Extract Audio
@@ -105,27 +110,30 @@ def convert_video_audio( v_path, dir_v_path_out, base_name, extract_audio_path, 
                                                        base_name,
                                                        extract_audio_path,
                                                        a_path_out_wav)
+        final_path = os.path.basename(final_path)
         return {"status": "COMPLETED",
                 "final_path": final_path}
     except VideoException as exc:
-        return {"status": "FAILED {}".format(exc.msg)}
+        return {"status": "FAILED {0} to extract audio".format(os.path.basename(v_path))}
     except Exception as exc:
-        return {"status": "FAILED {}".format(exc.message)}
+        return {"status": "FAILED {0} to extract audio".format(os.path.basename(v_path))}
 
 # Clip Video
 @celery.task
 def convert_video_clip(v_path, dir_v_path_out, clip_path_out, data):
+    #logger.info("EEETTTTTTTTT " + str(data))
     try:
         final_path = video_manager.convert_video_clip(v_path,
                                                       dir_v_path_out,
                                                       clip_path_out,
                                                       data)
+        final_path = os.path.basename(final_path)
         return {"status": "COMPLETED",
                 "final_path": final_path}
     except VideoException as exc:
-        return {"status": "FAILED {}".format(exc.msg)}
+        return {"status": "FAILED {0} to clip video ".format(os.path.basename(v_path))}
     except Exception as exc:
-        return {"status": "FAILED {}".format(exc.message)}
+        return {"status": "FAILED {0} to clip video ".format(os.path.basename(v_path))}
 
 
 # Rescale Video ->
@@ -134,12 +142,13 @@ def convert_video_clip(v_path, dir_v_path_out, clip_path_out, data):
 def video_rescale(v_path, dir_v_path_out, base_name, data):
     try:
         final_path = video_manager.video_rescale(v_path, dir_v_path_out, base_name, data)
+        final_path = os.path.basename(final_path)
         return {"status": "COMPLETED",
                 "final_path": final_path}
     except VideoException as exc:
-        return {"status": "FAILED {}".format(exc.msg)}
+        return {"status": "FAILED {0} to rescale video".format(os.path.basename(v_path))}
     except Exception as exc:
-        return {"status": "FAILED {}".format(exc.message)}
+        return {"status": "FAILED {0} to rescale video".format(os.path.basename(v_path))}
 
 
 """Audio Tasks"""
@@ -229,23 +238,28 @@ def image_resize(img_path, dir_v_path_out, base_name, data):
         final_path = os.path.join(dir_v_path_out, os.path.basename(base_name) + data[
             "image_out_format"])
         img2.save(final_path)
+
+        final_path = os.path.basename(final_path)
         return "COMPLETED {}".format(final_path)
     except Exception as exc:
         return "FAILED {}".format(exc)
 
 
-def process_all_tasks(tasks, credentials):
+def process_all_tasks(tasks, credentials, data):
+    #import logging
+    #logger = logging.getLogger('web')
     jobs = group(tasks)
     logger.info(jobs)
+    # logger.info( '\n'.join(str(task) for task in tasks) )
 
     result = jobs.apply_async()
     while not result.ready():
         logger.info('Waiting for results')
     with allow_join_result():
-        add_result_to_amq(result.get(), credentials)
+        add_result_to_amq(result.get(), credentials, data)
 
 
-def add_result_to_amq(results, credentials):
+def add_result_to_amq(results, credentials, data):
     print (results, credentials)
 
     username = credentials['brokerUsername']
@@ -255,6 +269,14 @@ def add_result_to_amq(results, credentials):
     port = credentials.get('brokerPort', 61613)
     conn = stomp.Connection([(host, port)])
     conn.connect(username, password, wait=True)
-    conn.send(body=json.dumps(results), destination=queue)
+    body = {
+        'input_folder':data['input_folder'],
+        'output_folder':data['output_folder'],
+        'results':results
+        }
+    conn.send(body=json.dumps(body), destination=queue)
+    # for result in results:
+    #     conn.send(body=json.dumps(result), destination=queue)
+    #     logger.info("Apote " + str(result))
     time.sleep(2)
     conn.disconnect()

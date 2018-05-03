@@ -29,6 +29,7 @@ class ProcessManager(object):
         need_check = False
         for img_path in self.file_manager.all_images:
             base_name = os.path.splitext(img_path)[0]
+            base_name = '/' + os.path.join(*(base_name.split(os.path.sep)[2:]))
             logger.info("Base name Image " + str(base_name))
 
             ext = os.path.splitext(img_path)[1]
@@ -65,6 +66,7 @@ class ProcessManager(object):
 
         for au_path in self.file_manager.all_audio:
             base_name = os.path.splitext(au_path)[0]
+            base_name = '/' + os.path.join(*(base_name.split(os.path.sep)[2:]))
             logger.info("Base name Audio " + str(base_name))
 
             ext = os.path.splitext(au_path)[1]
@@ -94,12 +96,22 @@ class ProcessManager(object):
     def video_processing(self, data, dir_v_path_in, dir_v_path_out, dbconn=None):
         for v_path in self.file_manager.all_videos:
 
+            data['v_out_format']=""
+
             base_name = os.path.splitext(v_path)[0]
+            base_name = '/' + os.path.join(*(base_name.split(os.path.sep)[2:]))
+            exten = os.path.splitext(v_path)[1]
             logger.info("Base NAME " + str(base_name))
 
-            if "v_out_format" not in data:
-                video_format = os.path.splitext(v_path)[1]
-                data["v_out_format"] = video_format
+            # if "v_out_format" not in data:
+            #     video_format = os.path.splitext(v_path)[1]
+            #     data["v_out_format"] = video_format
+
+            data['v_out_format'] = data.get('v_out_format', str(exten))
+            if data['v_out_format'] in "":
+                
+                data['v_out_format'] = str(exten)
+                logger.info("Irtha edw " + str(data['v_out_format']))
 
             if "rotate_video" in data:
                 # Rotate Video
@@ -137,6 +149,9 @@ class ProcessManager(object):
             # asynchronously.
             if v_crop:
                 crop_path = CROP_PATH_OUT.format(dir_v_path_out, base_name, v_crop)
+                logger.info("BCROP PATH OUT " + str(crop_path))
+                logger.info("dir_v_path_out " + str(dir_v_path_out))
+                logger.info("v_crop " + str(v_crop))
                 #mkdir_p(crop_path)
 
                 self.dispatcher.convert_video_crop(v_path, v_crop,
@@ -214,7 +229,6 @@ class ProcessManager(object):
                 logger.info("CREATE DIR " + str(dir_v_path_out) + "    " + str(
                     clip_path_out))
                 #subprocess.call(['mkdir', dir_v_path_out + clip_path_out])
-
                 self.dispatcher.convert_video_clip(v_path,
                                                    dir_v_path_out,
                                                    clip_path_out, data)

@@ -10,6 +10,7 @@ logger = get_task_logger('celery_logs')
 
 
 class VideoCommands(object):
+
     def convert_video_crop(self, v_path, crop, output_path, crop_output_path, data):
 
         command_string = 'ffmpeg -i {path} -filter:v crop={crop} -c:a copy {output}'
@@ -109,6 +110,7 @@ class VideoCommands(object):
         return final_path
 
     def convert_video_clip(self, v_path, dir_v_path_out, clip_path_out, data):
+
         from_clip = data["clip_video"].split('to')[0]
         to_clip = data["clip_video"].split('to')[1]
         file_name = os.path.basename(clip_path_out) + data["v_out_format"]

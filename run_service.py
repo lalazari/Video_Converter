@@ -102,7 +102,7 @@ class Service(object):
         if file_manager.all_images:
             process_manager.image_processing(data, output_folder)
 
-        p = Process(target=process_manager.dispatcher.dispatch)
+        p = Process(target=process_manager.dispatcher.dispatch(data))
         p.start()
         json_str = json.dumps(response)
 
