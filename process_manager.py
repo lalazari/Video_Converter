@@ -24,6 +24,7 @@ class ProcessManager(object):
     def __init__(self, credentials, file_manager):
         self.dispatcher = Dispatcher(credentials=credentials)
         self.file_manager = file_manager
+        self.tasks = []
 
     def image_processing(self, data, dir_v_path_out):
         need_check = False

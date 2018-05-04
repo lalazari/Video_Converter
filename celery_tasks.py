@@ -256,7 +256,18 @@ def process_all_tasks(tasks, credentials, data):
     while not result.ready():
         logger.info('Waiting for results')
     with allow_join_result():
-        add_result_to_amq(result.get(), credentials, data)
+        asynchronous = data.get("asynchronous", False)
+        if asynchronous:
+            add_result_to_amq(result.get(), credentials, data)
+        else:
+            with open(data['output_folder'] + '/' + 'data.txt', 'w') as outfile:
+                body = {
+                    'Asynchronous':'False',
+                    'input_folder':data['input_folder'],
+                    'output_folder':data['output_folder'],
+                    'results':result.get()
+                    }
+                json.dump(body, outfile)
 
 
 def add_result_to_amq(results, credentials, data):
@@ -270,6 +281,7 @@ def add_result_to_amq(results, credentials, data):
     conn = stomp.Connection([(host, port)])
     conn.connect(username, password, wait=True)
     body = {
+        'Asynchronous':'True',
         'input_folder':data['input_folder'],
         'output_folder':data['output_folder'],
         'results':results

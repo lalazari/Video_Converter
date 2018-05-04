@@ -102,9 +102,18 @@ class Service(object):
         if file_manager.all_images:
             process_manager.image_processing(data, output_folder)
 
-        p = Process(target=process_manager.dispatcher.dispatch(data))
-        p.start()
-        json_str = json.dumps(response)
+
+        asynchronous = data.get("asynchronous", False)
+
+        if asynchronous:
+            p = Process(target=process_manager.dispatcher.dispatch(data))
+            p.start()
+            json_str = json.dumps(response)
+        else:
+            results = process_manager.dispatcher.dispatch(data)
+            json_str = json.dumps(results)
+            # with open(output_folder + '/' + 'data.txt', 'w') as outfile:
+            #     json.dump(json_str, outfile)
 
         return json_str
 
