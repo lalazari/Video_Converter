@@ -47,7 +47,7 @@ User can change this path by changing the output_folder parameter
 				Will cut a 20 seconds part from the input video (from 10th to 30th second).
 				
 ### Video Processing
-- **v_out_format:** The output format of the video. In order to convert a video, the user should also enable(true) the transcode_video parameter.
+- **transcode_video:** The output format of the trancoded video. 
 - **crop_video:** Crops down the input video. Where the options are as follows:
 
 				Parameters-> out_w:out_h:x:y
@@ -105,5 +105,5 @@ Supports both synchronous and asynchronous execution.
 
 `curl -XPOST -H "Content-Type: application/json" -d '{"input_folder":"/shared","output_folder":"/shared/outputs","file_type":"","file_format":"",
 "image_out_format":".tiff","crop_image":"10:10:100:100","resize_image":"25x25","audio_out_format":".aac",
-"clip_audio":"10to20","v_out_format":".avi","crop_video":"80:60:200:100","rotate_video":"0",
+"clip_audio":"10to20","transcode_video":".avi","crop_video":"80:60:200:100","rotate_video":"0",
 "clip_video":"00:00:10to00:00:30","extract_frames":"0","transcode_video":false,"extract_audio":false,"brokerInfo": { "brokerURL": "amq", "brokerUsername": "admin", "brokerPassword": "admin", "brokerQueue": "/test/queue/"}}' localhost:9877/`
