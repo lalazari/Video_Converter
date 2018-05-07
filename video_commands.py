@@ -34,21 +34,26 @@ class VideoCommands(object):
 
         fps = self._get_fps_from_probe(v_path)
         fps = fps.strip()
-        fps = fps.split('/')[0]
-        i_fps = 1000 / float(extract_frames) if extract_frames != 0 else 0
+        fps = float(fps.split('/')[0]) / float(fps.split('/')[1])
+
+        i_fps = 1000 / float(extract_frames) if extract_frames != 0 else 1000 / float(fps) 
         final_fps = i_fps if float(i_fps) <= float(fps) else fps
 
-        final_path = self._get_final_path(base_name, dir_v_path_out, file_postfix='_f%03d_ms' + str(final_fps) + '.bmp',
-                                          folder_postfix='_Frames')
+        final_path = self._get_final_path(base_name, dir_v_path_out, file_postfix='_f%04d' + '.bmp',
+                                  folder_postfix='')
 
         command = command_string.format(path=v_path,
                                         fps=final_fps,
                                         output=final_path)
+
         logger.info(command)
         self._run(command)
 
-        #self.rename(frames_path , '*[0-9][0-9][0-9].bmp', final_fps) 
+        pathh = base_name + dir_v_path_out
+        pathh = pathh.split(base_name)[1]
+        #logger.info('Rename path ' + pathh + "       " + base_name)
 
+        self.rename(pathh + base_name, '*_f[0-9]*.bmp', 1.0/float(final_fps))
         return final_path
 
     def convert_video_transcode(self, v_path, dir_v_path_out, transcode_path, base_name, v_out_format):
@@ -148,7 +153,7 @@ class VideoCommands(object):
         mkdir_p(folder_path)
         file_name = os.path.basename(base_name) + file_postfix
         final_path = os.path.join(folder_path, file_name)
-        logger.info(final_path)
+        logger.info( final_path)
         return final_path
 
     @staticmethod
@@ -173,6 +178,18 @@ class VideoCommands(object):
             '-of default=noprint_wrappers=1:nokey=1 {}'.format(path))
 
         return self._run(command_string)
+
+    @staticmethod
+    def rename(dire, pattern, fps):
+        for pathAndFilename in glob.iglob(os.path.join(dire, pattern)):
+            bname, ext = os.path.splitext(os.path.basename(pathAndFilename))
+            bidx = bname.rindex("_f") + 2
+            frame_s = bname[bidx:]
+            frame = int(frame_s)
+            ms = int(frame * fps * 1000)
+            new_name = bname + "_msg" + str(ms) + ext
+            os.rename(pathAndFilename, os.path.join(dire, new_name))
+
 
 def get_video_commands_manager():
     return VideoCommands()

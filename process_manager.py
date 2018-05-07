@@ -15,7 +15,7 @@ AUDIO_TRANSCODE = "{0}{1}_audio_trancoded_"
 AUDIO_CLIP = "{0}{1}_clip_audio_From_To_{2}"
 
 CROP_PATH_OUT = '{0}{1}_CROPPED_{2}'
-FRAME_PATH_OUT = '{0}{1}_Frames'
+FRAME_PATH_OUT = '{0}{1}'
 TRANSCODE_PATH_OUT = '{0}{1}_transcoded{2}'
 AUDIO_FROM_VIDEO_PATH_OUT = '{0}{1}_Audio'
 
@@ -132,7 +132,7 @@ class ProcessManager(object):
             v_path_out = base_name + '_transcoded' + data["v_out_format"]
             logger.info("V_PATH OUT  " + str(v_path_out))
             # Create Frames, unique output name for each frame
-            frame_path_out = base_name + '%03d' + '.bmp'  # for the frames
+            frame_path_out = base_name + '%04d' + '.bmp'  # for the frames
             # Crop Video
             crop_path_out = base_name + '_CROPPED_'  # + data[
             # "v_out_format"]
@@ -167,7 +167,7 @@ class ProcessManager(object):
                                  "Input_Video": base_name})
             if v_extract_frames:
                 frames_path =  FRAME_PATH_OUT.format(dir_v_path_out, base_name)
-                mkdir_p(frames_path)
+                #mkdir_p(frames_path)
 
                 self.dispatcher.convert_video_frames(v_path,
                                                      dir_v_path_out,
