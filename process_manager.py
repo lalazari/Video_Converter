@@ -31,7 +31,6 @@ class ProcessManager(object):
         for img_path in self.file_manager.all_images:
             base_name = os.path.splitext(img_path)[0]
             base_name = '/' + os.path.join(*(base_name.split(os.path.sep)[2:]))
-            logger.info("Base name Image " + str(base_name))
 
             ext = os.path.splitext(img_path)[1]
             if need_check:
@@ -44,8 +43,6 @@ class ProcessManager(object):
                 path_transcode = IMAGE_TRANSCODE.format(dir_v_path_out, base_name)
                 mkdir_p(path_transcode)
                 self.dispatcher.image_transcode(img_path, path_transcode, data["image_out_format"])
-
-            logger.info("FORMAT IMAGE " + str(data["image_out_format"]))
 
             if data.get("crop_image"):
                 path_cropped = IMAGE_CROPPED.format(dir_v_path_out, base_name,
@@ -68,7 +65,6 @@ class ProcessManager(object):
         for au_path in self.file_manager.all_audio:
             base_name = os.path.splitext(au_path)[0]
             base_name = '/' + os.path.join(*(base_name.split(os.path.sep)[2:]))
-            logger.info("Base name Audio " + str(base_name))
 
             ext = os.path.splitext(au_path)[1]
 
@@ -83,8 +79,6 @@ class ProcessManager(object):
             if ("audio_out_format" not in data) or (
                         data["audio_out_format"] in ""):
                 data["audio_out_format"] = os.path.splitext(au_path)[1]
-
-            logger.info("AUDIO FORMAT " + str(data["audio_out_format"]))
        
             if data.get("clip_audio"):
                 path_clipped = AUDIO_CLIP.format(dir_v_path_out, base_name,
@@ -100,31 +94,20 @@ class ProcessManager(object):
             base_name = os.path.splitext(v_path)[0]
             base_name = '/' + os.path.join(*(base_name.split(os.path.sep)[2:]))
             exten = os.path.splitext(v_path)[1]
-            logger.info("Base NAME " + str(base_name))
 
             transcode_video = data.get('transcode_video', 'default')
             if  transcode_video in "default":
                 data['temp'] = ""
                 data['temp'] = str(exten)
-                logger.info("Irtha edw " + str(data['temp']))
                 v_transcode = False
             else:
                 data['temp'] = data.get('transcode_video')
                 v_transcode = True
-                logger.info("Irtha edw 222" + str(data['temp']))
-
-
-            # data['v_out_format'] = data.get('v_out_format', str(exten))
-            # if data['v_out_format'] in "":
-                
-            #     data['v_out_format'] = str(exten)
-            #     logger.info("Irtha edw " + str(data['v_out_format']))
 
             if "rotate_video" in data:
                 # Rotate Video
                 rotate_path_out = base_name + '_ROTATED_' + data[
                     "rotate_video"] + data['temp']
-                logger.info("Rotate Path " + str(rotate_path_out))
 
             v_clip_video = ""
             if "clip_video" in data:
@@ -132,23 +115,19 @@ class ProcessManager(object):
                 v_clip_video = data["clip_video"]
                 data_clip_video = data["clip_video"].replace(":", "-")
                 clip_path_out = base_name + "_Cut_From_To" + data_clip_video
-                logger.info("Clip Path " + str(clip_path_out))
 
             # Video Convertion
             v_path_out = base_name + '_transcoded' + data['temp']
-            logger.info("V_PATH OUT  " + str(v_path_out))
             # Create Frames, unique output name for each frame
-            frame_path_out = base_name + '%04d' + '.bmp'  # for the frames
+            frame_path_out = base_name + '%04d' + '.bmp'
             # Crop Video
-            crop_path_out = base_name + '_CROPPED_'  # + data[
-            # "v_out_format"]
+            crop_path_out = base_name + '_CROPPED_'
 
             # Audio Convertion
             a_path_out_wav = base_name + '.wav'
 
             v_crop = data.get("crop_video", '')
             v_extract_frames = data.get("extract_frames", '')
-            #v_transcode = data.get("transcode_video", False)
             v_rotate = data.get("rotate_video", '')
             v_extract_audio = data.get("extract_audio", False)
 
@@ -156,10 +135,6 @@ class ProcessManager(object):
             # asynchronously.
             if v_crop:
                 crop_path = CROP_PATH_OUT.format(dir_v_path_out, base_name, v_crop)
-                logger.info("BCROP PATH OUT " + str(crop_path))
-                logger.info("dir_v_path_out " + str(dir_v_path_out))
-                logger.info("v_crop " + str(v_crop))
-                #mkdir_p(crop_path)
 
                 self.dispatcher.convert_video_crop(v_path, v_crop,
                                                    dir_v_path_out,
@@ -173,7 +148,6 @@ class ProcessManager(object):
                                  "Input_Video": base_name})
             if v_extract_frames:
                 frames_path =  FRAME_PATH_OUT.format(dir_v_path_out, base_name)
-                #mkdir_p(frames_path)
 
                 self.dispatcher.convert_video_frames(v_path,
                                                      dir_v_path_out,
@@ -189,8 +163,7 @@ class ProcessManager(object):
 
                 transcode_path =  TRANSCODE_PATH_OUT.format(dir_v_path_out, base_name, data['temp'])
                 mkdir_p(transcode_path)
-                # subprocess.call(
-                #     ['mkdir', dir_v_path_out + base_name + "_transcoded"])
+
                 self.dispatcher.convert_video_transcode(v_path,
                                                         dir_v_path_out,
                                                         transcode_path,
@@ -232,9 +205,6 @@ class ProcessManager(object):
                                  "Input_Video": base_name})
 
             if v_clip_video:
-                logger.info("CREATE DIR " + str(dir_v_path_out) + "    " + str(
-                    clip_path_out))
-                #subprocess.call(['mkdir', dir_v_path_out + clip_path_out])
                 self.dispatcher.convert_video_clip(v_path,
                                                    dir_v_path_out,
                                                    clip_path_out, data)
@@ -245,7 +215,6 @@ class ProcessManager(object):
                                  "Input_Video": base_name})
 
             if ("rescale_video" in data) and (data["rescale_video"] not in ""):
-                logger.info("Rescale Parameters " + str(data["rescale_video"]))
                 if not os.path.isdir(dir_v_path_out + base_name + "rescale_To_" + data[
                     "rescale_video"]):
                     subprocess.call(['mkdir',

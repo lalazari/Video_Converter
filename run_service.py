@@ -112,8 +112,6 @@ class Service(object):
         else:
             results = process_manager.dispatcher.dispatch(data)
             json_str = json.dumps(results)
-            # with open(output_folder + '/' + 'data.txt', 'w') as outfile:
-            #     json.dump(json_str, outfile)
 
         return json_str
 

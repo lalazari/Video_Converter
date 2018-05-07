@@ -29,8 +29,6 @@ class VideoCommands(object):
     def convert_video_frames(self, v_path, dir_v_path_out, frames_path, base_name,
                              extract_frames):
         command_string = 'ffmpeg -i {path} -r {fps} {output}'
-        logger.info("Converting frames {}".format(dir_v_path_out))
-        
 
         fps = self._get_fps_from_probe(v_path)
         fps = fps.strip()
@@ -97,19 +95,13 @@ class VideoCommands(object):
 
     def convert_video_audio(self, v_path, dir_v_path_out, base_name, extract_audio_path, a_path_out_wav):
 
-        # input_path = os.path.join(dir_v_path_in, v_path)
-        #mkdir_p(dir_v_path_out)
         final_path = self._get_final_path(base_name, dir_v_path_out, 
                                         folder_postfix='_Audio', 
                                         file_postfix='_Audio_.mp3' )
 
-        #final_path = os.path.join(dir_v_path_out, base_name)
-
         command_string = 'ffmpeg -y -i {path} {output}'
-        #command_string  = 'ffmpeg -i {path} -codec:a libmp3lame -qscale:a 2 {output}'
         command = command_string.format(path=v_path,
                                         output=final_path)
-        logger.info("COMMAND " + str(command))
         self._run(command)
         return final_path
 
@@ -159,9 +151,9 @@ class VideoCommands(object):
     def _run(command):
         result = delegator.run(command, timeout=3600)
         logger.info("Executing command: [ {} ]".format(command))
-        # if result.return_code != 0:
-        #     logger.error(result.err)
-        #     raise VideoException(msg=result.err)
+        if result.return_code != 0:
+            logger.error(result.err)
+            raise VideoException(msg=result.err)
         logger.info("result: {}".format(result.out))
         return result.out
 
