@@ -89,14 +89,15 @@ Supports both synchronous and asynchronous execution.
 - **Asynchronounous:** To activate asynchronous execution, the user should include **"asynchronous":True** in the curl post command. This module needs ActiveMQ credentials in order to return results to an ActiveMQ queue.
                 
                 Credentials->
-    				"brokerInfo": {
+    		    "brokerInfo": {
                     "brokerURL": "amq",
                     "brokerUsername": "admin",
                     "brokerPassword": "admin",
                     "brokerQueue": "/test/queue/"
                 }
+
     Results on ActiveMQ:
-        `{"output_folder": "/shared/outputs", "input_folder": "/shared", "Asynchronous": "True", "results": [{"status": "FAILED Video1.mov to rotate video with parameter 1"}, {"status": "COMPLETED", "final_path": "Video2_ROTATED_1.wmv"]}`
+        `{"output_folder": "/shared/outputs", "input_folder": "/shared", "Asynchronous": "True", "results": [{"status": "FAILED Video1.mov to rotate video with parameter 1"}, {"status": "COMPLETED", "final_path": "Video2_ROTATED_1.wmv"]}}`
 The results could be checked at the http://localhost:8161/admin/queues.jsp .
 - **Synchronous:** There is no need for ActiveMQ credentials. The results are saved to a unique Json file into the output directory.
 ## Example with curl
