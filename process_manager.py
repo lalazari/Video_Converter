@@ -97,27 +97,33 @@ class ProcessManager(object):
     def video_processing(self, data, dir_v_path_in, dir_v_path_out, dbconn=None):
         for v_path in self.file_manager.all_videos:
 
-            data['v_out_format']=""
-
             base_name = os.path.splitext(v_path)[0]
             base_name = '/' + os.path.join(*(base_name.split(os.path.sep)[2:]))
             exten = os.path.splitext(v_path)[1]
             logger.info("Base NAME " + str(base_name))
 
-            # if "v_out_format" not in data:
-            #     video_format = os.path.splitext(v_path)[1]
-            #     data["v_out_format"] = video_format
+            transcode_video = data.get('transcode_video', 'default')
+            if  transcode_video in "default":
+                data['temp'] = ""
+                data['temp'] = str(exten)
+                logger.info("Irtha edw " + str(data['temp']))
+                v_transcode = False
+            else:
+                data['temp'] = data.get('transcode_video')
+                v_transcode = True
+                logger.info("Irtha edw 222" + str(data['temp']))
 
-            data['v_out_format'] = data.get('v_out_format', str(exten))
-            if data['v_out_format'] in "":
+
+            # data['v_out_format'] = data.get('v_out_format', str(exten))
+            # if data['v_out_format'] in "":
                 
-                data['v_out_format'] = str(exten)
-                logger.info("Irtha edw " + str(data['v_out_format']))
+            #     data['v_out_format'] = str(exten)
+            #     logger.info("Irtha edw " + str(data['v_out_format']))
 
             if "rotate_video" in data:
                 # Rotate Video
                 rotate_path_out = base_name + '_ROTATED_' + data[
-                    "rotate_video"] + data["v_out_format"]
+                    "rotate_video"] + data['temp']
                 logger.info("Rotate Path " + str(rotate_path_out))
 
             v_clip_video = ""
@@ -129,7 +135,7 @@ class ProcessManager(object):
                 logger.info("Clip Path " + str(clip_path_out))
 
             # Video Convertion
-            v_path_out = base_name + '_transcoded' + data["v_out_format"]
+            v_path_out = base_name + '_transcoded' + data['temp']
             logger.info("V_PATH OUT  " + str(v_path_out))
             # Create Frames, unique output name for each frame
             frame_path_out = base_name + '%04d' + '.bmp'  # for the frames
@@ -142,7 +148,7 @@ class ProcessManager(object):
 
             v_crop = data.get("crop_video", '')
             v_extract_frames = data.get("extract_frames", '')
-            v_transcode = data.get("transcode_video", False)
+            #v_transcode = data.get("transcode_video", False)
             v_rotate = data.get("rotate_video", '')
             v_extract_audio = data.get("extract_audio", False)
 
@@ -181,8 +187,7 @@ class ProcessManager(object):
                                  "Input_Video": base_name})
             if v_transcode:
 
-                transcode_path =  TRANSCODE_PATH_OUT.format(dir_v_path_out, base_name, data[
-                                                            "v_out_format"])
+                transcode_path =  TRANSCODE_PATH_OUT.format(dir_v_path_out, base_name, data['temp'])
                 mkdir_p(transcode_path)
                 # subprocess.call(
                 #     ['mkdir', dir_v_path_out + base_name + "_transcoded"])
@@ -190,12 +195,12 @@ class ProcessManager(object):
                                                         dir_v_path_out,
                                                         transcode_path,
                                                         base_name,
-                                                        data["v_out_format"])
+                                                        data['temp'])
 
                 if dbconn is not None:
                     dbconn.save({"User": data["mongodb"]["username"],
                                  "Action": "Transcode_video",
-                                 "Parameters": data["v_out_format"],
+                                 "Parameters": data['temp'],
                                  "Input_Video": base_name})
             if v_rotate:
                 subprocess.call(

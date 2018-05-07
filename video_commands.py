@@ -15,14 +15,14 @@ class VideoCommands(object):
 
         command_string = 'ffmpeg -i {path} -filter:v crop={crop} -c:a copy {output}'
 
-        file_name = os.path.basename(crop_output_path) + data["v_out_format"]
+        file_name = os.path.basename(crop_output_path) + data['temp']
         mkdir_p(crop_output_path)
         final_path = os.path.join(output_path, crop_output_path, file_name)
 
         command = command_string.format(path=v_path,
                                         crop=crop,
                                         output=final_path,
-                                        format=data['v_out_format'])
+                                        format=data['temp'])
         self._run(command)
         return final_path
 
@@ -51,7 +51,6 @@ class VideoCommands(object):
 
         pathh = base_name + dir_v_path_out
         pathh = pathh.split(base_name)[1]
-        #logger.info('Rename path ' + pathh + "       " + base_name)
 
         self.rename(pathh + base_name, '*_f[0-9]*.bmp', 1.0/float(final_fps))
         return final_path
@@ -88,7 +87,7 @@ class VideoCommands(object):
     def convert_video_rotate(self, v_path, v_rotate, dir_v_path_out, base_name, data):
         final_path = self._get_final_path(base_name, dir_v_path_out,
                                           folder_postfix='_ROTATED_' + data['rotate_video'],
-                                          file_postfix='_ROTATED_' + data['v_out_format'])
+                                          file_postfix='_ROTATED_' + data['temp'])
         command_string = 'ffmpeg -i {path} -vf transpose={rotation} {output}'
         command = command_string.format(path=v_path,
                                         rotation=v_rotate,
@@ -118,7 +117,7 @@ class VideoCommands(object):
 
         from_clip = data["clip_video"].split('to')[0]
         to_clip = data["clip_video"].split('to')[1]
-        file_name = os.path.basename(clip_path_out) + data["v_out_format"]
+        file_name = os.path.basename(clip_path_out) + data['temp']
         final_path = os.path.join(dir_v_path_out + clip_path_out)
         mkdir_p(final_path)
 
@@ -127,14 +126,14 @@ class VideoCommands(object):
         command = command_string.format(path=v_path,
                                         from_clip=from_clip,
                                         to_clip=to_clip,
-                                        output=final_path+ '/' +  os.path.basename(clip_path_out) + data["v_out_format"])
+                                        output=final_path+ '/' +  os.path.basename(clip_path_out) + data['temp'])
         self._run(command)
         return final_path
 
     def video_rescale(self, v_path, dir_v_path_out, base_name, data):
 
         rescale_video = data['rescale_video']
-        file_format = data['v_out_format']
+        file_format = data['temp']
         final_path = self._get_final_path(base_name, dir_v_path_out,
                                           folder_postfix="rescale_To_{}".format(rescale_video),
                                           file_postfix="rescale_To_{}".format(file_format))
@@ -160,9 +159,9 @@ class VideoCommands(object):
     def _run(command):
         result = delegator.run(command, timeout=3600)
         logger.info("Executing command: [ {} ]".format(command))
-        if result.return_code != 0:
-            logger.error(result.err)
-            raise VideoException(msg=result.err)
+        # if result.return_code != 0:
+        #     logger.error(result.err)
+        #     raise VideoException(msg=result.err)
         logger.info("result: {}".format(result.out))
         return result.out
 

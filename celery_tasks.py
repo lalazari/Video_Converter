@@ -66,19 +66,19 @@ def convert_video_frames(v_path, dir_v_path_out, frame_path_out, base_name,
 @celery.task
 def convert_video_transcode(v_path, dir_v_path_out, transcode_path, base_name, v_out_format):
     # Check the codec
-    try:
-        final_path = video_manager.convert_video_transcode(v_path,
-                                                           dir_v_path_out,
-                                                           transcode_path,
-                                                           base_name,
-                                                           v_out_format)
-        final_path = os.path.basename(final_path)
-        return {"status": "COMPLETED",
-                "final_path": final_path}
-    except VideoException as exc:
-        return {"status": "FAILED {0} to transcode to {1}".format(os.path.basename(v_path),  data['v_out_format'])}
-    except Exception as exc:
-        return {"status": "FAILED {0} to transcode to {1}".format(os.path.basename(v_path),  data['v_out_format'])}
+    #try:
+    final_path = video_manager.convert_video_transcode(v_path,
+                                                       dir_v_path_out,
+                                                       transcode_path,
+                                                       base_name,
+                                                       v_out_format)
+    final_path = os.path.basename(final_path)
+    return {"status": "COMPLETED",
+            "final_path": final_path}
+    # except VideoException as exc:
+    #     return {"status": "FAILED {0} to transcode to {1}".format(os.path.basename(v_path),  data['v_out_format'])}
+    # except Exception as exc:
+    #     return {"status": "FAILED {0} to transcode to {1}".format(os.path.basename(v_path),  data['v_out_format'])}
 
 
 # Rotate Video
