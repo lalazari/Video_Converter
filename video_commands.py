@@ -55,7 +55,7 @@ class VideoCommands(object):
 
     def convert_video_transcode(self, v_path, dir_v_path_out, transcode_path, base_name, v_out_format):
         # -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2"
-        # in order to not have not scalling issues "height not visible by
+        # in order to not have not scalling issues "height not divisible by
         # 2", because .h264 need even dimensions
         # Divide the original height and width by 2, Round it down to the
         # nearest pixel, Multiply it by 2 again, thus making it an even number
@@ -70,7 +70,7 @@ class VideoCommands(object):
                                           folder_postfix='_transcoded' + v_out_format,
                                           file_postfix=v_out_format)
         if out == "mjpeg":
-            command_string = ('ffmpeg -i {path} -vf scale=trunc(iw/2)*2:trunc(ih/2)*2 -c:v libx264 -preset veryslow -crf 18 {output}')
+            command_string = ('ffmpeg -i {path} -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -preset veryslow -crf 18 {output}')
             command = command_string.format(path=v_path,
                                             output=final_path)
             self._run(command)
@@ -97,7 +97,10 @@ class VideoCommands(object):
 
         final_path = self._get_final_path(base_name, dir_v_path_out, 
                                         folder_postfix='_Audio', 
-                                        file_postfix='_Audio_.mp3' )
+                                        file_postfix='_Audio.mp3' )
+
+        logger.info("final path audio " + v_path)
+        logger.info("final path audio " + final_path)
 
         command_string = 'ffmpeg -y -i {path} {output}'
         command = command_string.format(path=v_path,
@@ -140,7 +143,9 @@ class VideoCommands(object):
     def _get_final_path(base_name, dir_v_path_out, folder_postfix=None, file_postfix=None):
         folder_name = base_name + folder_postfix
         logger.info(folder_name)
+
         folder_path = dir_v_path_out + folder_name
+
         mkdir_p(folder_path)
         file_name = os.path.basename(base_name) + file_postfix
         final_path = os.path.join(folder_path, file_name)
@@ -151,9 +156,9 @@ class VideoCommands(object):
     def _run(command):
         result = delegator.run(command, timeout=3600)
         logger.info("Executing command: [ {} ]".format(command))
-        if result.return_code != 0:
-            logger.error(result.err)
-            raise VideoException(msg=result.err)
+        # if result.return_code != 0:
+        #     logger.error(result.err)
+        #     raise VideoException(msg=result.err)
         logger.info("result: {}".format(result.out))
         return result.out
 
@@ -178,7 +183,7 @@ class VideoCommands(object):
             frame_s = bname[bidx:]
             frame = int(frame_s)
             ms = int(frame * fps * 1000)
-            new_name = bname + "_msg" + str(ms) + ext
+            new_name = bname + "_ms" + str(ms) + ext
             os.rename(pathAndFilename, os.path.join(dire, new_name))
 
 

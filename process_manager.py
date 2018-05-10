@@ -7,11 +7,11 @@ from utils import mkdir_p
 
 logger = logging.getLogger('web')
 
-IMAGE_TRANSCODE = "{0}{1}_image_transcoded_"
-IMAGE_CROPPED = "{0}{1}_Cropped_images_{2}"
-IMAGE_RESIZED = "{0}{1}_Resized_images_{2}"
+IMAGE_TRANSCODE = "{0}{1}_image_transcoded{2}"
+IMAGE_CROPPED = "{0}{1}_Cropped_image_{2}"
+IMAGE_RESIZED = "{0}{1}_Resized_image_{2}"
 
-AUDIO_TRANSCODE = "{0}{1}_audio_trancoded_"
+AUDIO_TRANSCODE = "{0}{1}_audio_trancoded{2}"
 AUDIO_CLIP = "{0}{1}_clip_audio_From_To_{2}"
 
 CROP_PATH_OUT = '{0}{1}_CROPPED_{2}'
@@ -24,13 +24,12 @@ class ProcessManager(object):
     def __init__(self, credentials, file_manager):
         self.dispatcher = Dispatcher(credentials=credentials)
         self.file_manager = file_manager
-        self.tasks = []
 
     def image_processing(self, data, dir_v_path_out):
         need_check = False
         for img_path in self.file_manager.all_images:
             base_name = os.path.splitext(img_path)[0]
-            base_name = '/' + os.path.join(*(base_name.split(os.path.sep)[2:]))
+            base_name = '/' + os.path.join(*(base_name.split(os.path.sep)[-1:]))
 
             ext = os.path.splitext(img_path)[1]
             if need_check:
@@ -40,13 +39,16 @@ class ProcessManager(object):
                 data["image_out_format"] = ext
                 need_check = True
             if data["image_out_format"] not in ext:
-                path_transcode = IMAGE_TRANSCODE.format(dir_v_path_out, base_name)
+                path_transcode = IMAGE_TRANSCODE.format(dir_v_path_out,
+                                                        base_name, data["image_out_format"])
                 mkdir_p(path_transcode)
-                self.dispatcher.image_transcode(img_path, path_transcode, data["image_out_format"])
+                self.dispatcher.image_transcode(img_path, path_transcode,
+                                    data["image_out_format"])
 
             if data.get("crop_image"):
                 path_cropped = IMAGE_CROPPED.format(dir_v_path_out, base_name,
                                                     data["crop_image"].replace(":", "-"))
+
                 logger.info(path_cropped)
                 mkdir_p(path_cropped)
 
@@ -55,6 +57,7 @@ class ProcessManager(object):
             if data.get('resize_image'):
                 path_resized = IMAGE_RESIZED.format(dir_v_path_out, base_name,
                                                     data["resize_image"].replace("x", "-"))
+
                 mkdir_p(path_resized)
 
                 self.dispatcher.image_resize(img_path, path_resized,
@@ -64,7 +67,7 @@ class ProcessManager(object):
 
         for au_path in self.file_manager.all_audio:
             base_name = os.path.splitext(au_path)[0]
-            base_name = '/' + os.path.join(*(base_name.split(os.path.sep)[2:]))
+            base_name = '/' + os.path.join(*(base_name.split(os.path.sep)[-1:]))
 
             ext = os.path.splitext(au_path)[1]
 
@@ -72,12 +75,15 @@ class ProcessManager(object):
                 data["audio_out_format"] = ext
 
             if data["audio_out_format"] not in ext:
-                path_transcode = AUDIO_TRANSCODE.format(dir_v_path_out, base_name)
+                path_transcode = AUDIO_TRANSCODE.format(dir_v_path_out,
+                                        base_name, data["audio_out_format"])
                 mkdir_p(path_transcode)
-                self.dispatcher.audio_transcode(au_path, path_transcode, base_name, data["audio_out_format"])
+                self.dispatcher.audio_transcode(au_path, path_transcode,
+                                                 base_name, data["audio_out_format"])
 
             if ("audio_out_format" not in data) or (
                         data["audio_out_format"] in ""):
+
                 data["audio_out_format"] = os.path.splitext(au_path)[1]
        
             if data.get("clip_audio"):
@@ -92,7 +98,7 @@ class ProcessManager(object):
         for v_path in self.file_manager.all_videos:
 
             base_name = os.path.splitext(v_path)[0]
-            base_name = '/' + os.path.join(*(base_name.split(os.path.sep)[2:]))
+            base_name = '/' + os.path.join(*(base_name.split(os.path.sep)[-1:]))
             exten = os.path.splitext(v_path)[1]
 
             transcode_video = data.get('transcode_video', 'default')
@@ -136,6 +142,7 @@ class ProcessManager(object):
             if v_crop:
                 crop_path = CROP_PATH_OUT.format(dir_v_path_out, base_name, v_crop)
 
+
                 self.dispatcher.convert_video_crop(v_path, v_crop,
                                                    dir_v_path_out,
                                                    crop_path,
@@ -161,7 +168,8 @@ class ProcessManager(object):
                                  "Input_Video": base_name})
             if v_transcode:
 
-                transcode_path =  TRANSCODE_PATH_OUT.format(dir_v_path_out, base_name, data['temp'])
+                transcode_path =  TRANSCODE_PATH_OUT.format(dir_v_path_out,
+                                                            base_name, data['temp'])
                 mkdir_p(transcode_path)
 
                 self.dispatcher.convert_video_transcode(v_path,
@@ -190,7 +198,8 @@ class ProcessManager(object):
                                  "Input_Video": base_name})
 
             if v_extract_audio:
-                extract_audio_path = AUDIO_FROM_VIDEO_PATH_OUT.format(dir_v_path_out, base_name)
+                extract_audio_path = AUDIO_FROM_VIDEO_PATH_OUT.format(dir_v_path_out,
+                                                                    base_name)
                 mkdir_p(extract_audio_path)
 
                 self.dispatcher.convert_video_audio(v_path,

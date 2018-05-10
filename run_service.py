@@ -5,7 +5,6 @@ import warnings
 
 import coloredlogs
 import web
-
 # Celery: Tasks/job queue,
 # Send/Receive message solution (broker) -> Rabbitmq (See docker-compose.yaml)
 from file_manager import FileManager
@@ -59,7 +58,8 @@ class Service(object):
         logger.info("In Path: " + str(input_folder))
         logger.info("Out Path: " + str(output_folder))
 
-        """This is the output path for every type of conversion. Each operation keeps its directory
+        """This is the output path for every type of conversion.
+        Each operation keeps its directory
         tree inside the output path. 
         User can change this path by changing the output_folder parameter"""
         mkdir_p(output_folder)
@@ -103,17 +103,18 @@ class Service(object):
             process_manager.image_processing(data, output_folder)
 
 
-        asynchronous = data.get("asynchronous", False)
+        synchronous = data.get("synchronous", False)
 
-        if asynchronous:
-            p = Process(target=process_manager.dispatcher.dispatch(data))
-            p.start()
-            json_str = json.dumps(response)
-        else:
+        if synchronous:
             results = process_manager.dispatcher.dispatch(data)
-            json_str = json.dumps(results)
+            response = json.dumps(results)
+            
+        else:
+            p = Process(target=process_manager.dispatcher.dispatch, args=(data,))
+            p.start()
+            response = json.dumps(response)
 
-        return json_str
+        return response
 
 
 if __name__ == "__main__":

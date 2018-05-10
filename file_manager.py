@@ -5,7 +5,7 @@ videotypes = ['mp4', 'avi', 'wmv', '3gp', 'flv', 'mkv', 'mpg', 'mpeg', 'ogv',
               'ogg', 'mov', 'qt', 'ts', 'TOD', 'MOD', 'dv4', 'h264', 'vid',
               'ssf', 'sec']
 
-imagetypes = ['jpeg', 'jpg', 'jif', 'jfif', 'png', 'pdf', 'tif', 'tiff', 'gif']
+imagetypes = ['jpeg', 'jpg', 'jif', 'jfif', 'png', 'pdf', 'tif', 'tiff', 'gif', 'bmp']
 
 audiotypes = ['wav', 'mp3', 'aac', 'aiff', 'wma', 'flac']
 

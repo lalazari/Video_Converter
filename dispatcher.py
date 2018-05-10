@@ -6,7 +6,7 @@ import logging
 import copy
 from copy import deepcopy
 
-logger = logging.getLogger('web')
+#logger = logging.getLogger('web')
 class Dispatcher(object):
     def __init__(self, credentials):
         self.credentials = credentials
@@ -74,7 +74,6 @@ class Dispatcher(object):
         self.tasks.append(convert_video_clip.s(v_path,
                                                dir_v_path_out,
                                                clip_path_out,cp_data))
-        #logger.info( '\n'.join(str(task) for task in self.tasks) )
 
     def video_rescale(self, v_path, dir_v_path_out, base_name, data):
         cp_data = copy.deepcopy(data)
