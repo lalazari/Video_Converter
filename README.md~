@@ -14,16 +14,16 @@
 ## Curl Parameters
 
 - **Input folder:**"/shared" as input_folder.
-This a local folder into the container. The service uses default input folder ~/video_data.
-The user may change this folder in the docker-compose.yaml file (volumes)
+This a local folder into the container. The service uses default input folder /shared.
+The user may change this folder in the docker-compose.yaml file (volumes).
 
 - **Output folder:**"/shared" as input_folder.
-This is the output path for every type of conversion. Each operation keeps its directory tree in the output path. 
-User can change this path by changing the output_folder parameter
+This is the output path for every type of conversion./shared/outputs is the default output directory.
+User can change this path by changing the output_folder parameter.
 
 - **file_type:** Checks if user wants to load only a specific type of files {Video,Images,Audio}
 
-- **file_format:** Checks if user wants to load only a specific file format (Please check Supported Formats)
+- **file_format:** Checks if user wants to load only a specific file format (Please check Supported Formats in the file_manager.py)
 
 ### Image Processing
 - **image_out_format:** Image Transcode. Defines the output format of the image.
@@ -47,7 +47,7 @@ User can change this path by changing the output_folder parameter
 				Will cut a 20 seconds part from the input video (from 10th to 30th second).
 				
 ### Video Processing
-- **transcode_video:** The output format of the trancoded video. 
+- **transcode_video:** Video transcode. Defines the output format of the trancoded video. 
 - **crop_video:** Crops down the input video. Where the options are as follows:
 
 				Parameters-> out_w:out_h:x:y
@@ -76,7 +76,7 @@ User can change this path by changing the output_folder parameter
 				Example: 00:00:10to00:00:30
 				Will cut a 20 seconds part from the input video (from 10th to 30th second).
 
-- **extract_audio:** Converts a video to .wav file format.
+- **extract_audio:** Boolean parameter. Converts a video to .mp3 file format.
 
 - **extract_frames:** Extracts all the frames from the input video. Extracted frames are in .bmp format with a unique id.
 				
@@ -86,7 +86,7 @@ User can change this path by changing the output_folder parameter
 
 ## Asynchronous and synchronous execution:
 Supports both synchronous and asynchronous execution.
-- **Asynchronounous:** To activate asynchronous execution, the user should include **"asynchronous":True** in the curl post command. This module needs ActiveMQ credentials in order to return results to an ActiveMQ queue.
+- **Asynchronounous:** This is the default execution style. This module needs ActiveMQ credentials in order to return results to an ActiveMQ queue.
                 
                 Credentials->
     		    "brokerInfo": {
@@ -100,7 +100,7 @@ Supports both synchronous and asynchronous execution.
         `{"output_folder": "/shared/outputs", "input_folder": "/shared", "Asynchronous": "True", "results": [{"status": "FAILED Video1.mov to rotate video with parameter 1"}, {"status": "COMPLETED", "final_path": "Video2_ROTATED_1.wmv"]}}` .
 
 	The results could be checked at the http://localhost:8161/admin/queues.jsp .
-- **Synchronous:** There is no need for ActiveMQ credentials. The results are saved to a unique Json file into the output directory.
+- **Synchronous:** To activate synchronous execution, the user should include **"synchronous":true** in the curl post command. There is no need for ActiveMQ credentials. The results are saved to a unique Json file into the output directory.
 ## Example with curl
 
 `curl -XPOST -H "Content-Type: application/json" -d '{"input_folder":"/shared","output_folder":"/shared/outputs","file_type":"","file_format":"",
