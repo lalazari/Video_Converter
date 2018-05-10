@@ -206,7 +206,8 @@ class ProcessManager(object):
                                                     dir_v_path_out,
                                                     base_name,
                                                     extract_audio_path,
-                                                    a_path_out_wav)
+                                                    a_path_out_wav,
+                                                    data)
                 if dbconn is not None:
                     dbconn.save({"User": data["mongodb"]["username"],
                                  "Action": "Audio_Extraction",

@@ -109,14 +109,15 @@ def convert_video_rotate(v_path, v_rotate, dir_v_path_out, base_name, data):
 # Extract Audio
 @celery.task
 def convert_video_audio( v_path, dir_v_path_out, base_name, extract_audio_path,
-                         a_path_out_wav):
+                         a_path_out_wav, data):
 
     try:
         final_path = video_manager.convert_video_audio(v_path,
                                                        dir_v_path_out,
                                                        base_name,
                                                        extract_audio_path,
-                                                       a_path_out_wav)
+                                                       a_path_out_wav,
+                                                       data)
         final_path = os.path.basename(final_path)
         return {"status": "COMPLETED",
                 "final_path": final_path}

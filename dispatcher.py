@@ -62,12 +62,14 @@ class Dispatcher(object):
                             dir_v_path_out,
                             base_name,
                             extract_audio_path,
-                            a_path_out_wav):
+                            a_path_out_wav,
+                            data):
         self.tasks.append(convert_video_audio.s(v_path,
                                                 dir_v_path_out,
                                                 base_name,
                                                 extract_audio_path,
-                                                a_path_out_wav))
+                                                a_path_out_wav,
+                                                data))
 
     def convert_video_clip(self, v_path, dir_v_path_out, clip_path_out, data):
         cp_data = copy.deepcopy(data)

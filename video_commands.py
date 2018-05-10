@@ -93,11 +93,11 @@ class VideoCommands(object):
         self._run(command)
         return final_path
 
-    def convert_video_audio(self, v_path, dir_v_path_out, base_name, extract_audio_path, a_path_out_wav):
+    def convert_video_audio(self, v_path, dir_v_path_out, base_name, extract_audio_path, a_path_out_wav, data):
 
         final_path = self._get_final_path(base_name, dir_v_path_out, 
                                         folder_postfix='_Audio', 
-                                        file_postfix='_Audio.mp3')
+                                        file_postfix=str(data["extract_audio"]))
 
         command_string = 'ffmpeg -y -i {path} {output}'
         command = command_string.format(path=v_path,
