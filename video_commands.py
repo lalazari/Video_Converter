@@ -97,10 +97,7 @@ class VideoCommands(object):
 
         final_path = self._get_final_path(base_name, dir_v_path_out, 
                                         folder_postfix='_Audio', 
-                                        file_postfix='_Audio.mp3' )
-
-        logger.info("final path audio " + v_path)
-        logger.info("final path audio " + final_path)
+                                        file_postfix='_Audio.mp3')
 
         command_string = 'ffmpeg -y -i {path} {output}'
         command = command_string.format(path=v_path,
@@ -156,9 +153,9 @@ class VideoCommands(object):
     def _run(command):
         result = delegator.run(command, timeout=3600)
         logger.info("Executing command: [ {} ]".format(command))
-        # if result.return_code != 0:
-        #     logger.error(result.err)
-        #     raise VideoException(msg=result.err)
+        if result.return_code != 0:
+            logger.error(result.err)
+            raise VideoException(msg=result.err)
         logger.info("result: {}".format(result.out))
         return result.out
 
