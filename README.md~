@@ -76,7 +76,7 @@ User can change this path by changing the output_folder parameter.
 				Example: 00:00:10to00:00:30
 				Will cut a 20 seconds part from the input video (from 10th to 30th second).
 
-- **extract_audio:** Boolean parameter. Converts a video to .mp3 file format.
+- **extract_audio:** Converts a video to audio format.
 
 - **extract_frames:** Extracts all the frames from the input video. Extracted frames are in .bmp format with a unique id.
 				
@@ -106,4 +106,4 @@ Supports both synchronous and asynchronous execution.
 `curl -XPOST -H "Content-Type: application/json" -d '{"input_folder":"/shared","output_folder":"/shared/outputs","file_type":"","file_format":"",
 "image_out_format":".tiff","crop_image":"10:10:100:100","resize_image":"25x25","audio_out_format":".aac",
 "clip_audio":"10to20","transcode_video":".avi","crop_video":"80:60:200:100","rotate_video":"0",
-"clip_video":"00:00:10to00:00:30","extract_frames":"0","synchronous":false,"extract_audio":false,"brokerInfo": { "brokerURL": "amq", "brokerUsername": "admin", "brokerPassword": "admin", "brokerQueue": "/test/queue/"}}' localhost:9877/`
+"clip_video":"00:00:10to00:00:30","extract_frames":"0","synchronous":false,"extract_audio":.mp3,"brokerInfo": { "brokerURL": "amq", "brokerUsername": "admin", "brokerPassword": "admin", "brokerQueue": "/test/queue/"}}' localhost:9877/`
