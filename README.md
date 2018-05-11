@@ -1,29 +1,40 @@
 # Video_Converter
 
 ## How to Run
-1. Create Folder ~/converter
-2. Create Folder ~/video_data
-3. Copy your videos to ~/video_data
-4. Install docker compose
-5. Build images before starting containers: sudo docker-compose build
-6. Start the containers in the background and leave them running: docker-compose up -d
-   The docker-compose up command aggregates the output of each container.
-	- Maybe you should also initialize the network using: sudo docker network create back-tier
-7. `sudo curl -XPOST -H "Content-Type: application/json" -d '{..Parameters..}'`
+1. Create Folder ~/Video_converter
+2. cd ~/Video_converter
+3. git clone https://github.com/lalazari/Video_Converter.git
+4. Create Folder /shared
+5. Copy your video, images or audio files to /shared
+6. Install docker compose
+7. Build images before starting containers: sudo docker-compose build
+8. Start the containers in the background and leave them running: docker-compose up -d .
+9. Maybe you should also initialize the network using: sudo docker network create back-tier
+10. `sudo curl -XPOST -H "Content-Type: application/json" -d '{..Parameters..}'`
+
+## Supported Formats
+- **Video:** *mp4, avi, wmv, 3gp, flv, mkv, mpg, mpeg,  
+		ogv, ogg, mov, qt, ts, TOD, MOD, dv4, h264, vid,  
+        ssf, sec*  
+- **Audio:** *wav, mp3, aac, aiff, wma, flac* 
+- **Image:** *jpeg, jpg, jif, jfif, png, pdf, tif, tiff, gif, bmp*
 
 ## Curl Parameters
 
-- **Input folder:**"/shared" as input_folder.
-This a local folder into the container. The service uses default input folder /shared.
-The user may change this folder in the docker-compose.yaml file (volumes).
+### All parameters are optional.
+
+- **Input folder:**" /shared" as input_folder.
+This parameter defines the input directory. The default input directory is /shared (How to Run: Step 4). Users should copy any data inside the "input_folder" direcory.
+
+	/shared is also a shared folder into the container. Users may change this folder in the docker-compose.yaml(volumes) file.
 
 - **Output folder:**"/shared" as input_folder.
 This is the output path for every type of conversion./shared/outputs is the default output directory.
 User can change this path by changing the output_folder parameter.
 
-- **file_type:** Checks if user wants to load only a specific type of files {Video,Images,Audio}
+- **file_type:** Optional parameter which checks if the user wants to load only a specific type of files {Video,Images,Audio}. If this parameter is empty or it is not included in the input Json, the module uses every type of files.
 
-- **file_format:** Checks if user wants to load only a specific file format (Please check Supported Formats in the file_manager.py)
+- **file_format:** Checks if user wants to load only a specific file format (Please check Supported Formats section). For example, if file_format is .mp4, only .mp4 files will be processed by the module.
 
 ### Image Processing
 - **image_out_format:** Image Transcode. Defines the output format of the image.
@@ -33,12 +44,12 @@ User can change this path by changing the output_folder parameter.
 
 				Example: 10:10:100:100
 
-- **resize_image:** Returns a resized copy of this image in pixels. width **x** height.
+- **resize_image:** Returns a resized copy of this image. Parameter -> Width **x** Height (Pixels).
 
 ### Audio Processing
 - **audio_out_format:** Audio Transcode. Defines the output format of the audio files.
 
-- **clip_audio:** Cuts a part of the audio file. 
+- **clip_audio:** Cuts a part of an audio file. 
 
                 Parameters->
 					Start: 00:00:00 - hours:minutes:seconds
@@ -76,7 +87,7 @@ User can change this path by changing the output_folder parameter.
 				Example: 00:00:10to00:00:30
 				Will cut a 20 seconds part from the input video (from 10th to 30th second).
 
-- **extract_audio:** Converts a video to audio format.
+- **extract_audio:** Converts a video to audio format. Please, check supported formats.
 
 - **extract_frames:** Extracts all the frames from the input video. Extracted frames are in .bmp format with a unique id.
 				
@@ -86,7 +97,7 @@ User can change this path by changing the output_folder parameter.
 
 ## Asynchronous and synchronous execution:
 Supports both synchronous and asynchronous execution.
-- **Asynchronounous:** This is the default execution style. This module needs ActiveMQ credentials in order to return results to an ActiveMQ queue.
+- **Asynchronounous:** This is the default execution style. This module takes (optional) ActiveMQ credentials in order to return results to an ActiveMQ queue.
                 
                 Credentials->
     		    "brokerInfo": {
@@ -105,5 +116,5 @@ Supports both synchronous and asynchronous execution.
 
 `curl -XPOST -H "Content-Type: application/json" -d '{"input_folder":"/shared","output_folder":"/shared/outputs","file_type":"","file_format":"",
 "image_out_format":".tiff","crop_image":"10:10:100:100","resize_image":"25x25","audio_out_format":".aac",
-"clip_audio":"10to20","transcode_video":".avi","crop_video":"80:60:200:100","rotate_video":"0",
-"clip_video":"00:00:10to00:00:30","extract_frames":"0","synchronous":false,"extract_audio":".mp3","brokerInfo": { "brokerURL": "amq", "brokerUsername": "admin", "brokerPassword": "admin", "brokerQueue": "/test/queue/"}}' localhost:9877/`
+"clip_audio":"00:00:10to00:00:20","transcode_video":".avi","crop_video":"80:60:200:100","rotate_video":"0",
+"clip_video":"00:00:10to00:00:30","extract_frames":"0","synchronous":false,"extract_audio":.mp3,"brokerInfo": { "brokerURL": "amq", "brokerUsername": "admin", "brokerPassword": "admin", "brokerQueue": "/test/queue/"}}' localhost:9877/`
